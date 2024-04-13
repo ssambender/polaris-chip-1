@@ -1,0 +1,24 @@
+{
+    "possibleAnswers": {
+      "C-JSON choice 1": {
+        "correct": true,
+        "feedback": "feedback about tag"
+      },
+      "C-#2": {
+        "correct": true,
+        "feedback": "feedback about tag 2"
+      },
+      "Third JSON option!": {
+        "correct": false,
+        "feedback": "feedback about tag 3"
+      },
+      "Fourth JSON option!": {
+        "correct": false,
+        "feedback": "feedback about tag 4"
+      },
+      "C-Fifth JSON option!": {
+        "correct": true,
+        "feedback": "feedback about tag 5"
+      }
+    }
+  }

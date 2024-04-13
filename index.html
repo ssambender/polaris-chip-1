@@ -6,37 +6,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="Description" content="Boilerplate for polaris chip">
   <base href="/">
+  <title>tagging-question component</title>
 
   <style>
-    :root,
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: sans-serif;
-      background-color: #ededed;
+    :root {
+      --bg: #F5F7FD;
     }
-    polaris-chip {
-      margin: 16px;
+
+    body {
+        display: flex;
+        flex-direction: column;
+        width: 40vw;
+        margin-left: 30vw;
+        font-family: sans-serif;
+        background: #4E5872;
+        color: var(--bg);
+    }
+    @media all and (orientation: portrait) {
+        body {
+            width: 90vw;
+            margin-left: 5vw;
+        }
     }
   </style>
-  <title>polaris-chip / my-card</title>
 </head>
 
 <body>
-  <h1>polaris-chip</h1>
-  <!-- this is going to do whatever the tag's defaults are -->
-  <polaris-chip title="News of Record" link="https://psu.edu/"></polaris-chip>
-  <polaris-chip title="Faculty and Staff"></polaris-chip>
-  <polaris-chip title="Sports are the only thing that matter"></polaris-chip>
-  <polaris-chip title="Grants and donations"></polaris-chip>
 
-  <h1>my-card</h1>
-  <my-card></my-card>
+  <h1>TaggingQuestion Demo</h1>
 
-  <!-- this is what is bringing in the definition for this tag -->
-  <script type="module" src="./src/polaris-chip.js"></script>
-  <script type="module" src="./src/my-card.js"></script>
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Sed id semper risus in hendrerit gravida rutrum quisque. Sapien et ligula ullamcorper malesuada proin. Sed viverra ipsum nunc aliquet bibendum. Facilisi etiam dignissim diam quis enim lobortis. Arcu felis bibendum ut tristique et egestas quis ipsum. In hendrerit gravida rutrum quisque non tellus orci ac. Augue mauris augue neque gravida in fermentum et. Vitae justo eget magna fermentum iaculis eu non. Enim tortor at auctor urna nunc id cursus metus aliquam. Diam volutpat commodo sed egestas. Quisque id diam vel quam elementum pulvinar etiam non. Malesuada nunc vel risus commodo viverra maecenas accumsan. Ullamcorper morbi tincidunt ornare massa. Velit scelerisque in dictum non consectetur a. Urna condimentum mattis pellentesque id nibh tortor id aliquet lectus. Cursus turpis massa tincidunt dui ut. Vitae aliquet nec ullamcorper sit amet risus nullam eget felis. Massa sed elementum tempus egestas sed sed risus pretium quam.
+
+  <tagging-question question="What would you use to describe the following image?" imageURL="https://image.cnbcfm.com/api/v1/image/107325630-1698689874055-gettyimages-1727589260-ENTER-NEWS-DISNEY-100-YEARS-6-OS.jpeg?v=1699657873"></tagging-question>
+
+  Mattis enim ut tellus elementum sagittis vitae et. Vel orci porta non pulvinar neque. Ut lectus arcu bibendum at varius vel pharetra. Egestas dui id ornare arcu. Pellentesque adipiscing commodo elit at imperdiet dui. Fringilla ut morbi tincidunt augue. Venenatis urna cursus eget nunc scelerisque. Faucibus purus in massa tempor nec feugiat nisl. Porttitor leo a diam sollicitudin tempor id eu. Facilisi etiam dignissim diam quis enim lobortis scelerisque fermentum dui. Consequat mauris nunc congue nisi vitae suscipit. Risus at ultrices mi tempus imperdiet nulla. Euismod quis viverra nibh cras pulvinar mattis nunc sed. Imperdiet sed euismod nisi porta lorem mollis aliquam. Orci nulla pellentesque dignissim enim sit amet. Mus mauris vitae ultricies leo integer malesuada nunc vel risus. Nisl rhoncus mattis rhoncus urna.
+
+  <tagging-question></tagging-question>
+
+  <script type="module" src="./src/tagging-question.js"></script>
 </body>
 
 </html>
