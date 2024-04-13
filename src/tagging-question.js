@@ -176,6 +176,11 @@ export class TaggingQuestion extends LitElement {
         background-color: var(--bg) !important;
         color: #374985 !important;
       }
+
+      confetti-container {
+        display: flex;
+        flex-direction: column;
+      }
     `;
   }
 
@@ -188,18 +193,29 @@ export class TaggingQuestion extends LitElement {
         const bankedTags = this.shadowRoot.getElementById('bankedTags');
         const possibleAnswers = json.possibleAnswers;
 
-        // Iterate over possibleAnswers and create a button for each one
+        // Create a new tag for each key from the json file (tags.json in this case)
+        const buttons = [];
         for (const key in possibleAnswers) {
           const option = possibleAnswers[key];
           const button = document.createElement('button');
           button.classList.add('chip');
           button.draggable = true;
           button.textContent = key;
-          button.dataset.correct = option.correct; // store correct flag in dataset
-          button.dataset.feedback = option.feedback; // store feedback in dataset
-          button.addEventListener('dragstart', this.handleDragStart.bind(this)); // bind handleDragStart to 'this'
-          bankedTags.appendChild(button);
+          button.dataset.correct = option.correct;
+          button.dataset.feedback = option.feedback;
+          button.addEventListener('dragstart', this.handleDragStart.bind(this));
+          buttons.push(button);
         }
+
+        // Shuffle:
+        for (let i = buttons.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [buttons[i], buttons[j]] = [buttons[j], buttons[i]];
+        }
+
+        buttons.forEach(button => {
+          bankedTags.appendChild(button);
+        });
       });
   }
 
@@ -215,7 +231,7 @@ export class TaggingQuestion extends LitElement {
           <div id="droppedTags" @dragover=${this.handleDragOver} @drop=${this.handleDrop}>
               <div id="dropTagHint">[Drop tags here]</div>
           </div>
-          <div id="bankedTags">
+          <div id="bankedTags" @dragover=${this.handleDragOverReverse} @drop=${this.handleDropReverse}>
           </div>
           <div id="controls">
               <button class="controlBtn" @click=${this.resetTags}>
@@ -232,37 +248,65 @@ export class TaggingQuestion extends LitElement {
   }
 
 
+  // Drag tag jawns from answer bank -> selected answers
   handleDragStart(event) {
     event.dataTransfer.setData('text/plain', event.target.textContent);
     this.currentTag = event.target;
   }
-
   handleDragOver(event) {
     event.preventDefault();
   }
-
   handleDrop(event) {
-    console.log("handleDrop()");
-    console.log(event.target);
-    console.log(this.currentTag);
-
     event.preventDefault();
 
     const data = event.dataTransfer.getData('text/plain');
     const droppedTags = this.shadowRoot.getElementById('droppedTags');
     const bankedTags = this.shadowRoot.getElementById('bankedTags');
     const button = this.currentTag;
-    if (button && this.checked == false) {
-      button.remove();
-      droppedTags.appendChild(button);
-      
-      // Hide hint:
-      this.shadowRoot.querySelector('#dropTagHint').style.display = 'none';
-      // Show checkanswers button:
-      const controlBtns = this.shadowRoot.querySelectorAll('.controlBtn');
-      controlBtns.forEach(btn => {
-          btn.style.visibility = 'visible';
-      });
+
+    if (button && this.checked === false) {
+        button.remove();
+        droppedTags.appendChild(button);
+
+        // Hide hint:
+        this.shadowRoot.querySelector('#dropTagHint').style.display = 'none';
+        // Show checkanswers button:
+        const controlBtns = this.shadowRoot.querySelectorAll('.controlBtn');
+        controlBtns.forEach(btn => {
+            btn.style.visibility = 'visible';
+        });
+    }
+  }
+
+  // Reverse reverse
+  handleDragStartReverse(event) {
+    event.dataTransfer.setData('text/plain', event.target.textContent);
+    this.currentTag = event.target;
+  }
+  handleDragOverReverse(event) {
+    event.preventDefault();
+  }
+  handleDropReverse(event) {
+    event.preventDefault();
+
+    const data = event.dataTransfer.getData('text/plain');
+    const droppedTags = this.shadowRoot.getElementById('droppedTags');
+    const bankedTags = this.shadowRoot.getElementById('bankedTags');
+    const button = this.currentTag;
+
+    if (button && this.checked === false) {
+        button.remove();
+        bankedTags.appendChild(button);
+        
+        // Show hint again if all things are moved back:
+        if (droppedTags.querySelectorAll('.chip').length === 0) {
+            this.shadowRoot.querySelector('#dropTagHint').style.display = 'flex';
+            // Hide check answers button:
+            const controlBtns = this.shadowRoot.querySelectorAll('.controlBtn');
+            controlBtns.forEach(btn => {
+                btn.style.visibility = 'hidden';
+            });
+        }
     }
   }
 
@@ -272,7 +316,7 @@ export class TaggingQuestion extends LitElement {
 
     this.shadowRoot.querySelector('#checkBtn').classList.remove('disabled');
 
-    // Move tags back to bank:
+    // Move all tags back to bank:
     const droppedTags = this.shadowRoot.getElementById('droppedTags');
     const bankedTags = this.shadowRoot.getElementById('bankedTags');
     const childrenToMove = Array.from(droppedTags.children).filter(child => child.id !== 'dropTagHint');
@@ -284,9 +328,16 @@ export class TaggingQuestion extends LitElement {
         child.title = "";
     });
 
+    // Shuffle:
+    const buttons = Array.from(bankedTags.children);
+    for (let i = buttons.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      bankedTags.insertBefore(buttons[j], buttons[i]);
+    }
+
     // Show hint:
     this.shadowRoot.querySelector('#dropTagHint').style.display = 'flex';
-    // Hide checkanswers button:
+    // Hide check answers button:
     const controlBtns = this.shadowRoot.querySelectorAll('.controlBtn');
     controlBtns.forEach(btn => {
         btn.style.visibility = 'hidden';
@@ -347,7 +398,6 @@ export class TaggingQuestion extends LitElement {
         }, 0);
       }
     );
-    console.log("make it rain");
   }
 
 
