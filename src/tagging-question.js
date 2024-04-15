@@ -33,6 +33,11 @@ export class TaggingQuestion extends LitElement {
         border: 1px solid black;
       }
 
+      details {
+        box-sizing: border-box;
+        /** border: solid 1px var(--chip-1); **/
+      }
+
       #tagging-question summary {
         cursor: pointer;
         font-weight: bold;
@@ -86,6 +91,8 @@ export class TaggingQuestion extends LitElement {
         opacity: 20%;
         color: black;
         font-weight: bold;
+        pointer-events: none;
+        user-select: none;
       }
 
       #bankedTags {
@@ -144,6 +151,7 @@ export class TaggingQuestion extends LitElement {
         width: 100%;
         justify-content: center;
         align-items: center;
+        margin-bottom: 8px;
       }
       #controls button {
         margin: 0 8px;
@@ -180,6 +188,11 @@ export class TaggingQuestion extends LitElement {
       confetti-container {
         display: flex;
         flex-direction: column;
+      }
+
+      .noPointerEvents {
+        pointer-events: none;
+        user-select: none;
       }
     `;
   }
@@ -226,12 +239,14 @@ export class TaggingQuestion extends LitElement {
       <details id="tagging-question" open>
         <summary>${this.question}</summary>
         <confetti-container id="confetti">
-          <img id="image" src=${this.imageURL}>
+          <div style="width: 100%; display: flex; justify-content: center;">
+            <img id="image" src=${this.imageURL}>
+          </div>
           <div id="question">${this.question}</div>
-          <div id="droppedTags" @dragover=${this.handleDragOver} @drop=${this.handleDrop}>
+          <div id="droppedTags" @click=${this.droppedClicked} @dragover=${this.handleDragOver} @drop=${this.handleDrop}>
               <div id="dropTagHint">[Drop tags here]</div>
           </div>
-          <div id="bankedTags" @dragover=${this.handleDragOverReverse} @drop=${this.handleDropReverse}>
+          <div id="bankedTags" @click=${this.bankedClicked} @dragover=${this.handleDragOverReverse} @drop=${this.handleDropReverse}>
           </div>
           <div id="controls">
               <button class="controlBtn" @click=${this.resetTags}>
@@ -255,6 +270,34 @@ export class TaggingQuestion extends LitElement {
   }
   handleDragOver(event) {
     event.preventDefault();
+  }
+  droppedClicked(event) {
+    this.currentTag = event.target;
+    if (this.checked === false) {
+      const droppedTags = this.shadowRoot.getElementById('droppedTags');
+      const bankedTags = this.shadowRoot.getElementById('bankedTags');
+
+      if(this.currentTag.classList.contains('chip')) {
+        this.currentTag.remove();
+        bankedTags.append(this.currentTag);
+
+        console.log("dropped click");
+
+        // hide check and reset buttons if no chips
+        // hide hint 
+
+
+        // Show hint again if all things are moved back:
+        if (droppedTags.querySelectorAll('.chip').length === 0) {
+          this.shadowRoot.querySelector('#dropTagHint').style.display = 'flex';
+          // Hide check answers button:
+          const controlBtns = this.shadowRoot.querySelectorAll('.controlBtn');
+          controlBtns.forEach(btn => {
+              btn.style.visibility = 'hidden';
+          });
+        }
+      }
+    }
   }
   handleDrop(event) {
     event.preventDefault();
@@ -285,6 +328,25 @@ export class TaggingQuestion extends LitElement {
   }
   handleDragOverReverse(event) {
     event.preventDefault();
+  }
+  bankedClicked(event) {
+    this.currentTag = event.target;
+    if (this.checked === false) {
+      const droppedTags = this.shadowRoot.getElementById('droppedTags');
+
+      if(this.currentTag.classList.contains('chip')) {
+        this.currentTag.remove();
+        droppedTags.append(this.currentTag);
+
+        // Hide hint:
+        this.shadowRoot.querySelector('#dropTagHint').style.display = 'none';
+        // Show checkanswers button:
+        const controlBtns = this.shadowRoot.querySelectorAll('.controlBtn');
+        controlBtns.forEach(btn => {
+            btn.style.visibility = 'visible';
+        });
+      }
+    }
   }
   handleDropReverse(event) {
     event.preventDefault();
@@ -328,6 +390,19 @@ export class TaggingQuestion extends LitElement {
         child.title = "";
     });
 
+    // Remove disable cursor
+    const droppedTagsChips = this.shadowRoot.querySelectorAll('#droppedTags .chip');
+    for (const tag of droppedTagsChips) {
+        tag.classList.remove("noPointerEvents");
+        tag.removeAttribute('tabindex');
+    }
+    const bankedTagsChips = this.shadowRoot.querySelectorAll('#bankedTags .chip');
+      for (const tag of bankedTagsChips) {
+          tag.classList.remove("noPointerEvents");
+          tag.removeAttribute('tabindex');
+    }
+
+
     // Shuffle:
     const buttons = Array.from(bankedTags.children);
     for (let i = buttons.length - 1; i > 0; i--) {
@@ -367,6 +442,8 @@ export class TaggingQuestion extends LitElement {
             allDroppedCorrect = false;
             tag.title = tag.dataset.feedback;
           }
+          tag.classList.add("noPointerEvents");
+          tag.setAttribute('tabindex', -1);
       }
   
       // Banked tags:
@@ -377,6 +454,8 @@ export class TaggingQuestion extends LitElement {
             allBankedCorrect = false;
             tag.title = tag.dataset.feedback;
           }
+          tag.classList.add("noPointerEvents");
+          tag.setAttribute('tabindex', -1);
       }
   
       if(allDroppedCorrect && allBankedCorrect) {
