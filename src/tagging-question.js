@@ -10,6 +10,7 @@ export class TaggingQuestion extends LitElement {
     this.imageURL = "";
     this.currentTag;
     this.checked = false;
+    this.answerSet = "default";
   }
 
   static get styles() {
@@ -42,6 +43,9 @@ export class TaggingQuestion extends LitElement {
         cursor: pointer;
         font-weight: bold;
       }
+      #tagging-question summary:hover {
+        text-decoration: underline;
+      }
 
       #tagging-question {
         background: var(--bg);
@@ -70,6 +74,14 @@ export class TaggingQuestion extends LitElement {
         font-size: 1.5em;
         box-sizing: border-box;
         margin-bottom: 32px;
+      }
+
+      #feedbackSection {
+        width: 80%;
+        margin-left: 10%;
+        padding-top: 24px;
+        display: none;
+        flex-direction: column;
       }
 
       #droppedTags {
@@ -120,6 +132,8 @@ export class TaggingQuestion extends LitElement {
         border: solid 1px var(--chip-1);
         color: var(--chip-1);
         background: var(--bg);
+
+        transition: all .1s;
       }
       .chip:nth-child(n):focus, .chip:nth-child(n):hover {
         background: var(--chip-1);
@@ -194,17 +208,27 @@ export class TaggingQuestion extends LitElement {
         pointer-events: none;
         user-select: none;
       }
+
+      .green {
+        color: #00c161;
+      }
+      .red {
+        color: #f85656;
+      }
     `;
   }
 
  
   connectedCallback() {
     super.connectedCallback();
+
+    const answerSet = this.answerSet;
+
     fetch('src/tags.json')
       .then((response) => response.json())
       .then((json) => {
         const bankedTags = this.shadowRoot.getElementById('bankedTags');
-        const possibleAnswers = json.possibleAnswers;
+        const possibleAnswers = json[answerSet];
 
         // Create a new tag for each key from the json file (tags.json in this case)
         const buttons = [];
@@ -245,6 +269,10 @@ export class TaggingQuestion extends LitElement {
           <div id="question">${this.question}</div>
           <div id="droppedTags" @click=${this.droppedClicked} @dragover=${this.handleDragOver} @drop=${this.handleDrop}>
               <div id="dropTagHint">[Drop tags here]</div>
+          </div>
+          <div id="feedbackSection">
+            <li>a</li>
+            <li>b</li>
           </div>
           <div id="bankedTags" @click=${this.bankedClicked} @dragover=${this.handleDragOverReverse} @drop=${this.handleDropReverse}>
           </div>
@@ -378,6 +406,10 @@ export class TaggingQuestion extends LitElement {
 
     this.shadowRoot.querySelector('#checkBtn').classList.remove('disabled');
 
+    // Reset feedback section
+    this.shadowRoot.querySelector('#feedbackSection').style.display = 'none';
+    this.shadowRoot.querySelector('#feedbackSection').innerHTML = ``;
+
     // Move all tags back to bank:
     const droppedTags = this.shadowRoot.getElementById('droppedTags');
     const bankedTags = this.shadowRoot.getElementById('bankedTags');
@@ -388,6 +420,9 @@ export class TaggingQuestion extends LitElement {
         child.classList.remove("correct");
         child.classList.remove("incorrect");
         child.title = "";
+
+        // FEEDBACK SEC
+        this.shadowRoot.querySelector('#feedbackSection').innerHTML = ``;
     });
 
     // Remove disable cursor
@@ -430,17 +465,27 @@ export class TaggingQuestion extends LitElement {
   
       this.shadowRoot.querySelector('#checkBtn').classList.add('disabled');
   
+      // Reset feedback section
+      this.shadowRoot.querySelector('#feedbackSection').style.display = 'flex';
+      this.shadowRoot.querySelector('#feedbackSection').innerHTML = ``;
+
       // Dropped tags:
       const droppedTags = this.shadowRoot.querySelectorAll('#droppedTags .chip');
       for (const tag of droppedTags) {
           const isCorrect = tag.dataset.correct === 'true';
           if(isCorrect){
             tag.classList.add("correct");
+
+            // FEEDBACK SEC CORRECT
+            this.shadowRoot.querySelector('#feedbackSection').innerHTML += `<li class="green">${tag.dataset.feedback}</li>`;
           }
           else {
             tag.classList.add("incorrect");
             allDroppedCorrect = false;
             tag.title = tag.dataset.feedback;
+
+            // FEEDBACK SEC INCORRECT
+            this.shadowRoot.querySelector('#feedbackSection').innerHTML += `<li class="red">${tag.dataset.feedback}</li>`;
           }
           tag.classList.add("noPointerEvents");
           tag.setAttribute('tabindex', -1);
@@ -453,6 +498,9 @@ export class TaggingQuestion extends LitElement {
           if(isCorrect){
             allBankedCorrect = false;
             tag.title = tag.dataset.feedback;
+
+            // FEEDBACK SEC
+            //this.shadowRoot.querySelector('#feedbackSection').innerHTML += `<li class="green">${tag.dataset.feedback}</li>`;
           }
           tag.classList.add("noPointerEvents");
           tag.setAttribute('tabindex', -1);
@@ -461,6 +509,18 @@ export class TaggingQuestion extends LitElement {
       if(allDroppedCorrect && allBankedCorrect) {
         console.log("100%!!");
         this.makeItRain();
+        //this.shadowRoot.querySelector('#feedbackSection').style.display = 'none';
+
+        this.shadowRoot.querySelector('#feedbackSection').innerHTML = ``;
+        const bankedTags = this.shadowRoot.querySelectorAll('#droppedTags .chip');
+        for (const tag of bankedTags) {
+            allBankedCorrect = false;
+            tag.title = tag.dataset.feedback;
+
+            // FEEDBACK SEC
+            this.shadowRoot.querySelector('#feedbackSection').innerHTML += `<li class="green">${tag.dataset.feedback}</li>`;
+          }
+
       }
       else {
         console.log("not 100% :(");
@@ -484,6 +544,7 @@ export class TaggingQuestion extends LitElement {
     return {
       question: { type: String },
       imageURL: { type: String },
+      answerSet: { type: String }
     };
   }
 }

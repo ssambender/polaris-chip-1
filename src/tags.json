@@ -1,5 +1,15 @@
 {
-    "possibleAnswers": {
+    "default": {
+    "default btn - true": {
+      "correct": true,
+      "feedback": "default feedback option true"
+    },
+    "default btn - false": {
+      "correct": false,
+      "feedback": "default feedback option false"
+    }
+  },
+    "haxLogo": {
       "good form": {
         "correct": true,
         "feedback": "The shape of the vase clearly demonstrates craftsmanship."
@@ -27,6 +37,48 @@
       "accessible": {
         "correct": false,
         "feedback": "The color scheme while high contrast in some areas, loses form in others and has written text unrelated to the character."
+      }
+    },
+    "disneyStatue": {
+      "statue has mouse": {
+        "correct": true,
+        "feedback": "Mickey Mouse!"
+      },
+      "statue has person": {
+        "correct": true,
+        "feedback": "Walt Disney is visible as the subject of the statue."
+      },
+      "has castle": {
+        "correct": true,
+        "feedback": "The WDW Cinderella Castle is in the background."
+      },
+      "has rainbow": {
+        "correct": false,
+        "feedback": "No rainbow in the picture."
+      },
+      "black and white": {
+        "correct": false,
+        "feedback": "Image is in full color!"
+      },
+      "has clouds": {
+        "correct": true,
+        "feedback": "There are some fluffy white cluods."
+      },
+      "is raining": {
+        "correct": false,
+        "feedback": "It is not raining."
+      },
+      "flowers are yellow": {
+        "correct": false,
+        "feedback": "Flowers are red/pink."
+      },
+      "magical": {
+        "correct": true,
+        "feedback": "Most magical place on Earth!"
+      },
+      "is night time": {
+        "correct": false,
+        "feedback": "It is day time."
       }
     }
   }
