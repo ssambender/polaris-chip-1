@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'lit';
+import { DDD } from "@lrnwebcomponents/d-d-d/d-d-d.js";
 
 export class TaggingQuestion extends LitElement {
   static get tag() {
@@ -16,27 +17,26 @@ export class TaggingQuestion extends LitElement {
   static get styles() {
     return css`
 
+      /* default colors */
+      /* doesn't follow D-D-D design system but i REALLY like these colors... */
       :host {
         --bg: #F5F7FD;
         --chip-1: #728DE6;
+        --text-1: #374985;
+        --correct-col: #00c161;
+        --incorrect-col: #f85656;
       }
-
-      span {
-        background-color: orange;
-        color: black;
-        font-size: 24px;
-        padding: 16px;
-        margin: 8px;
-      }
-
-      span:hover {
-        background-color: grey;
-        border: 1px solid black;
+      /* dark mode options */
+      @media (prefers-color-scheme: dark) {
+        :host {
+        --bg: #2D333B;
+        --chip-1: #fddf68;
+        --text-1: #717e8b;
+        }
       }
 
       details {
         box-sizing: border-box;
-        /** border: solid 1px var(--chip-1); **/
       }
 
       #tagging-question summary {
@@ -49,19 +49,19 @@ export class TaggingQuestion extends LitElement {
 
       #tagging-question {
         background: var(--bg);
-        min-height: 32px;
-        min-width: 64px;
+        min-height: var(--ddd-spacing-8);
+        min-width: var(--ddd-spacing-16);
         display: flex;
         flex-direction: column;
         box-sizing: border-box;
-        padding: 8px;
+        padding: var(--ddd-spacing-2);
         user-select: none;
-        color: #374985;
-        margin: 16px 0;
+        color: var(--text-1);
+        margin: var(--ddd-spacing-4) 0;
       }
 
       #tagging-question img {
-        padding-top: 8px;
+        padding-top: var(--ddd-spacing-2);
         max-height: 500px;
         object-fit: contain;
         max-width: 100%;
@@ -70,16 +70,16 @@ export class TaggingQuestion extends LitElement {
       #question {
         font-family: inherit;
         text-align: center;
-        padding: 8px;
+        padding: var(--ddd-spacing-2);
         font-size: 1.5em;
         box-sizing: border-box;
-        margin-bottom: 32px;
+        margin-bottom: var(--ddd-spacing-8);
       }
 
       #feedbackSection {
         width: 80%;
         margin-left: 10%;
-        padding-top: 24px;
+        padding-top: var(--ddd-spacing-6);
         display: none;
         flex-direction: column;
       }
@@ -109,7 +109,7 @@ export class TaggingQuestion extends LitElement {
 
       #bankedTags {
         box-sizing: border-box;
-        padding: 24px 64px;
+        padding: var(--ddd-spacing-6) var(--ddd-spacing-16);
         width: 100%;
         display: inline-block;
         justify-content: center;
@@ -119,10 +119,10 @@ export class TaggingQuestion extends LitElement {
 
       .chip {
         display: inline-block;
-        margin: 4px 16px;
+        margin: var(--ddd-spacing-1) var(--ddd-spacing-4);
         border-radius: 100px;
         box-sizing: border-box;
-        padding: 4px 12px;
+        padding: var(--ddd-spacing-1) var(--ddd-spacing-3);
 
         font-size: 1em;
         font-weight: normal;
@@ -141,22 +141,22 @@ export class TaggingQuestion extends LitElement {
       }
 
       .correct {
-        border: solid 1px #00c161;
-        color: #00c161;
+        border: solid 1px var(--correct-col);
+        color: var(--correct-col);
         background: var(--bg);
       }
       .correct:nth-child(n):focus, .correct:nth-child(n):hover {
-        background: #00c161;
+        background: var(--correct-col);
         color: var(--bg);
       }
 
       .incorrect {
-        border: solid 1px #f85656;
-        color: #f85656;
+        border: solid 1px var(--incorrect-col);
+        color: var(--incorrect-col);
         background: var(--bg);
       }
       .incorrect:nth-child(n):focus, .incorrect:nth-child(n):hover {
-        background: #f85656;
+        background: var(--incorrect-col);
         color: var(--bg);
       }
 
@@ -165,25 +165,25 @@ export class TaggingQuestion extends LitElement {
         width: 100%;
         justify-content: center;
         align-items: center;
-        margin-bottom: 8px;
+        margin-bottom: var(--ddd-spacing-2);
       }
       #controls button {
-        margin: 0 8px;
-        border: solid 2px #374985;
-        color: #374985;
+        margin: 0 var(--ddd-spacing-2);
+        border: solid 2px var(--text-1);
+        color: var(--text-1);
         background: var(--bg);
         box-sizing: border-box;
         cursor: pointer;
         user-select: none;
         outline: none;
-        padding: 4px 8px;
+        padding: var(--ddd-spacing-1) var(--ddd-spacing-2);
         font-family: inherit;
         font-size: 0.75em;
         font-weight: normal;
       }
       #controls button:focus, #controls button:hover {
         color: var(--bg);
-        background: #374985;
+        background: var(--text-1);
       }
 
       .controlBtn {
@@ -196,7 +196,7 @@ export class TaggingQuestion extends LitElement {
         pointer-events: none !important;
         user-select: none !important;
         background-color: var(--bg) !important;
-        color: #374985 !important;
+        color: var(--text-1) !important;
       }
 
       confetti-container {
@@ -210,10 +210,10 @@ export class TaggingQuestion extends LitElement {
       }
 
       .green {
-        color: #00c161;
+        color: var(--correct-col);
       }
       .red {
-        color: #f85656;
+        color: var(--incorrect-col);
       }
     `;
   }
