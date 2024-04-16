@@ -227,10 +227,13 @@ export class TaggingQuestion extends LitElement {
     fetch('src/tags.json')
       .then((response) => response.json())
       .then((json) => {
+        // Create a new tag for each key from the json file (tags.json in this case)
+        // json[answerset] will get the json object for just the matching questions (based on answerSet param)
+        //        to anyone reading this code, note: 
+        //        json.answerSet will not work because it will look for answerSet object not the object with the value of answerSet
         const bankedTags = this.shadowRoot.getElementById('bankedTags');
         const possibleAnswers = json[answerSet];
 
-        // Create a new tag for each key from the json file (tags.json in this case)
         const buttons = [];
         for (const key in possibleAnswers) {
           const option = possibleAnswers[key];
@@ -244,12 +247,13 @@ export class TaggingQuestion extends LitElement {
           buttons.push(button);
         }
 
-        // Shuffle:
+        // Shuffle all the buttons:
         for (let i = buttons.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           [buttons[i], buttons[j]] = [buttons[j], buttons[i]];
         }
 
+        // add each of the shuffled buttons to the bank:
         buttons.forEach(button => {
           bankedTags.appendChild(button);
         });
@@ -299,6 +303,7 @@ export class TaggingQuestion extends LitElement {
   handleDragOver(event) {
     event.preventDefault();
   }
+  // instead of dropping, allow it to be clicked for mobile and stuff
   droppedClicked(event) {
     this.currentTag = event.target;
     if (this.checked === false) {
@@ -309,11 +314,10 @@ export class TaggingQuestion extends LitElement {
         this.currentTag.remove();
         bankedTags.append(this.currentTag);
 
-        console.log("dropped click");
+        // console.log("dropped click");
 
         // hide check and reset buttons if no chips
         // hide hint 
-
 
         // Show hint again if all things are moved back:
         if (droppedTags.querySelectorAll('.chip').length === 0) {
@@ -327,12 +331,11 @@ export class TaggingQuestion extends LitElement {
       }
     }
   }
+  // instead of clicked if it is actually dragged and then dropped
   handleDrop(event) {
     event.preventDefault();
 
-    const data = event.dataTransfer.getData('text/plain');
     const droppedTags = this.shadowRoot.getElementById('droppedTags');
-    const bankedTags = this.shadowRoot.getElementById('bankedTags');
     const button = this.currentTag;
 
     if (button && this.checked === false) {
@@ -357,6 +360,7 @@ export class TaggingQuestion extends LitElement {
   handleDragOverReverse(event) {
     event.preventDefault();
   }
+  // instead of dropping, allow it to be clicked for mobile and stuff
   bankedClicked(event) {
     this.currentTag = event.target;
     if (this.checked === false) {
@@ -376,10 +380,10 @@ export class TaggingQuestion extends LitElement {
       }
     }
   }
+  // dropped not lcicked
   handleDropReverse(event) {
     event.preventDefault();
 
-    const data = event.dataTransfer.getData('text/plain');
     const droppedTags = this.shadowRoot.getElementById('droppedTags');
     const bankedTags = this.shadowRoot.getElementById('bankedTags');
     const button = this.currentTag;
@@ -402,35 +406,39 @@ export class TaggingQuestion extends LitElement {
 
 
   resetTags() {
+    // make it so it can be checked again:
     this.checked = false;
 
+    // allow button to be clicked (or look like it can be clicked) again:
     this.shadowRoot.querySelector('#checkBtn').classList.remove('disabled');
 
-    // Reset feedback section
+    // Reset feedback section:
     this.shadowRoot.querySelector('#feedbackSection').style.display = 'none';
     this.shadowRoot.querySelector('#feedbackSection').innerHTML = ``;
 
     // Move all tags back to bank:
     const droppedTags = this.shadowRoot.getElementById('droppedTags');
     const bankedTags = this.shadowRoot.getElementById('bankedTags');
-    const childrenToMove = Array.from(droppedTags.children).filter(child => child.id !== 'dropTagHint');
+    const tagsToMove = Array.from(droppedTags.children).filter(seb => seb.id !== 'dropTagHint');
 
-    childrenToMove.forEach(child => {
-        bankedTags.appendChild(child);
-        child.classList.remove("correct");
-        child.classList.remove("incorrect");
-        child.title = "";
+    // Each child remove the classes
+    tagsToMove.forEach(mia => {
+        bankedTags.appendChild(mia);
+        mia.classList.remove("correct");
+        mia.classList.remove("incorrect");
+        mia.title = "";
 
         // FEEDBACK SEC
         this.shadowRoot.querySelector('#feedbackSection').innerHTML = ``;
     });
 
-    // Remove disable cursor
+    // Remove disable class and disable -tabindexing from droppedTags:
     const droppedTagsChips = this.shadowRoot.querySelectorAll('#droppedTags .chip');
     for (const tag of droppedTagsChips) {
         tag.classList.remove("noPointerEvents");
         tag.removeAttribute('tabindex');
     }
+    // Remove disable class and disable -tabindexing from bankedTags:
     const bankedTagsChips = this.shadowRoot.querySelectorAll('#bankedTags .chip');
       for (const tag of bankedTagsChips) {
           tag.classList.remove("noPointerEvents");
@@ -457,9 +465,12 @@ export class TaggingQuestion extends LitElement {
 
   checkTags() {
     if(this.checked == false){
-
+      // Only do stuff when checked if it hasnt already just been checked
+      // Obviously css handles preventing clicking and some html prevents tab/entering,
+      // but just incase don't allow it with this JS as well
       this.checked = true;
 
+      // helps compare if ALL are correct, as opposed to each individual correctness when itterated 
       let allDroppedCorrect = true;
       let allBankedCorrect = true;
   
@@ -506,8 +517,8 @@ export class TaggingQuestion extends LitElement {
           tag.setAttribute('tabindex', -1);
       }
   
-      if(allDroppedCorrect && allBankedCorrect) {
-        console.log("100%!!");
+      if(allDroppedCorrect && allBankedCorrect) {  // All answers (banked and dropped) are where they should be
+        //console.log("100%!!");
         this.makeItRain();
         //this.shadowRoot.querySelector('#feedbackSection').style.display = 'none';
 
@@ -522,10 +533,12 @@ export class TaggingQuestion extends LitElement {
           }
 
       }
+      /**
       else {
+        // not 100% correct
         console.log("not 100% :(");
       }
-
+      */
     }
   }
 
