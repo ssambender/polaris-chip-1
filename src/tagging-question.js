@@ -257,7 +257,19 @@ export class TaggingQuestion extends LitElement {
         buttons.forEach(button => {
           bankedTags.appendChild(button);
         });
-      });
+    });
+
+    // set/override imageUrl to the slotted image if there is a slotted img tag
+    const slottedImage = this.querySelector('img');
+    if(slottedImage) {
+      this.imageURL = slottedImage.src;
+    }
+    // set/overide question text to slotted p text if any
+    const slottedP = this.querySelector('p');
+    if(slottedP) {
+      this.question = slottedP.innerText;
+    }
+
   }
 
 
